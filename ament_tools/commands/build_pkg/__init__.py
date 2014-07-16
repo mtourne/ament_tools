@@ -17,6 +17,7 @@ from __future__ import print_function
 import argparse
 import os
 from pkg_resources import iter_entry_points
+import shlex
 import subprocess
 import sys
 
@@ -112,7 +113,7 @@ def run_command(cmd, cwd=None):
     if cwd:
         msg += ' (in %s)' % cwd
     print(msg)
-    return subprocess.check_call(cmd, cwd=cwd)
+    return subprocess.check_call(' '.join([(shlex.quote(c) if c != '&&' else c) for c in cmd]), cwd=cwd, shell=True)
 
 
 # meta information of the entry point

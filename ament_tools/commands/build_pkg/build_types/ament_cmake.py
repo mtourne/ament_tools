@@ -54,12 +54,17 @@ def main(args):
         os.makedirs(build_prefix)
 
     try:
+        source_setup_cmd = []
+        local_setup = os.path.join(install_prefix, 'local_setup.sh')
+        if os.path.exists(local_setup):
+            source_setup_cmd = ['.', local_setup, '&&']
+
         # consider invoking cmake
         makefile = os.path.join(build_prefix, 'Makefile')
         if not os.path.exists(makefile) or \
                 ns.force_cmake or \
                 cmake_input_changed(build_prefix, cmake_args):
-            cmd = [
+            cmd = source_setup_cmd + [
                 'cmake',
                 pkg_path,
                 '-DCMAKE_INSTALL_PREFIX=%s' % install_prefix,
@@ -68,14 +73,14 @@ def main(args):
             run_command(cmd, cwd=build_prefix)
 
         # invoke make
-        cmd = [
+        cmd = source_setup_cmd + [
             'make',
         ]
         cmd += make_args
         run_command(cmd, cwd=build_prefix)
 
         # invoke make install
-        cmd = [
+        cmd = source_setup_cmd + [
             'make',
             'install',
         ]
