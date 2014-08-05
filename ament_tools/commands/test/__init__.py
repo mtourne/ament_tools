@@ -50,7 +50,7 @@ def main(args):
     packages = topological_order(ns.basepath)
 
     print('')
-    print('# Topologoical order')
+    print('# Topological order')
     for (path, package) in packages:
         print(' - %s' % package.name)
     print('')

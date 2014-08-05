@@ -16,6 +16,7 @@ from __future__ import print_function
 
 import argparse
 import os
+import sys
 
 from ament_tools.commands.build_pkg import main as build_pkg_main
 from ament_tools.commands.helper import argparse_existing_dir
@@ -50,10 +51,11 @@ def main(args):
     packages = topological_order(ns.basepath)
 
     print('')
-    print('# Topologoical order')
+    print('# Topological order')
     for (path, package) in packages:
         print(' - %s' % package.name)
     print('')
+    sys.stdout.flush()
 
     for (path, package) in packages:
         pkg_path = os.path.join(ns.basepath, path)
@@ -61,6 +63,8 @@ def main(args):
         print('')
         print('# Building: %s' % package.name)
         print('')
+        sys.stdout.flush()
+
         rc = build_pkg_main([
             pkg_path,
             '--build-prefix', os.path.join(ns.build_prefix, package.name),

@@ -113,7 +113,12 @@ def run_command(cmd, cwd=None):
     if cwd:
         msg += ' (in %s)' % cwd
     print(msg)
-    return subprocess.check_call(' '.join([(shlex.quote(c) if c != '&&' else c) for c in cmd]), cwd=cwd, shell=True)
+    sys.stdout.flush()
+
+    return_code = subprocess.check_call(' '.join([(shlex.quote(c) if c != '&&' else c) for c in cmd]), cwd=cwd, shell=True)
+    sys.stdout.flush()
+    sys.stderr.flush()
+    return return_code
 
 
 # meta information of the entry point
