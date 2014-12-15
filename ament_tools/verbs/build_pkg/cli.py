@@ -35,6 +35,19 @@ from ament_tools.helper import extract_argument_group
 
 from osrf_pycommon.cli_utils.verb_pattern import call_prepare_arguments
 
+## XX (mtourne): temporary workaround around shlex.quote
+import re
+_find_unsafe = re.compile(r'[^\w@%+=:,./-]', re.ASCII).search
+def quote(s):
+    """Return a shell-escaped version of the string *s*."""
+    if not s:
+        return "''"
+    if _find_unsafe(s) is None:
+        return s
+
+    # use single quotes, and put single quotes into double quotes
+    # the string $'b is then quoted as '$'"'"'b'
+    return "'" + s.replace("'", "'\"'\"'") + "'"
 
 def add_path_argument(parser):
     """Add position path argument to parser."""
@@ -237,7 +250,7 @@ def run_command(build_action, context):
         " ".join(build_action.cmd), cwd))
     try:
         cmd = build_action.cmd
-        cmd = ' '.join([(shlex.quote(c) if c != '&&' else c) for c in cmd])
+        cmd = ' '.join([(quote(c) if c != '&&' else c) for c in cmd])
         subprocess.check_call(cmd, shell=True, cwd=cwd)
     except subprocess.CalledProcessError as exc:
         print()
